@@ -36,6 +36,9 @@ class DBcontroller:
             logging.exception(f'Database init error {ex}')
             self.conn.rollback()
 
+    def get_sub_days(self, username):
+        return 0
+
     def get_subs(self):
         pass
 
