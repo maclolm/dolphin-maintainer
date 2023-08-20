@@ -39,6 +39,9 @@ class DBcontroller:
     def get_sub_days(self, username):
         return 0
 
+    def get_owners(self):
+        pass
+
     def get_subs(self):
         pass
 

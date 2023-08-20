@@ -3,7 +3,7 @@ import logging
 import config
 from aiogram import Bot, Dispatcher
 
-from routers import sub_router
+from router import router
 from dbcontroller import DBcontroller
 
 logging.basicConfig(level=logging.INFO)
@@ -13,7 +13,7 @@ db = DBcontroller(config.dbfile)
 async def main():
     bot = Bot(token=config.token)
     dispatcher = Dispatcher()
-    dispatcher.include_routers(sub_router.router)
+    dispatcher.include_routers(router)
 
     await dispatcher.start_polling(bot)
 
