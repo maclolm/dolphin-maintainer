@@ -22,7 +22,7 @@ class DBcontroller:
     def init(self):
         try:
             cmd = "CREATE TABLE IF NOT EXISTS subscribers (" \
-                  "     id INT PRIMARY KEY," \
+                  "     id INTEGER PRIMARY KEY," \
                   "     tg_id INT NOT NULL," \
                   "     username CHAR NOT NULL," \
                   "     status CHAR NOT NULL," \
@@ -31,7 +31,7 @@ class DBcontroller:
             self.__execute_cmd(cmd)
 
             cmd = "CREATE TABLE IF NOT EXISTS owners (" \
-                  "     id INT PRIMARY KEY," \
+                  "     id INTEGER PRIMARY KEY," \
                   "     tg_id INT NOT NULL," \
                   "     username CHAR NOT NULL" \
                   ");"
@@ -39,7 +39,7 @@ class DBcontroller:
 
             # TODO: sub_id
             cmd = "CREATE TABLE IF NOT EXISTS transactions (" \
-                  "     id INT PRIMARY KEY," \
+                  "     id INTEGER PRIMARY KEY," \
                   "     sub_id CHAR NOT NULL, " \
                   "     amount INT NOT NULL," \
                   "     status CHAR NOT NULL," \
