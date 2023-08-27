@@ -5,13 +5,12 @@ from aiogram.filters import Command
 from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 
 from bot.messages import BotMessages, BotButtons
-from bot.handlers.routers_helper import get_user_id
+from.routers_helper import get_user_id
 from bot import permissions
 
 router = Router()
 
 
-# --- Owner messages ---
 @router.message(F.text == BotButtons.STATS_FOR_OWNER)
 @permissions.is_owner
 async def get_owner_stats(message: Message):
@@ -36,3 +35,4 @@ async def add_sub(message: Message):
 @permissions.is_owner
 async def delete_sub(message: Message):
     await message.reply(f"Пока невозможно удалить подписчика из системы")
+

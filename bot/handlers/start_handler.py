@@ -45,7 +45,6 @@ async def cmd_start(message: Message):
     await message.answer("Привет👋. Я тестовый бот управления подпиской", reply_markup=keyboard)
 
 
-# --- Ubsub and Sub messages ---
 @router.message(F.text == BotButtons.INFO)
 async def get_info(message: Message):
     await message.reply(f"Текст с общей информацией о VIP-канале.")

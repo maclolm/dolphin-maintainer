@@ -4,6 +4,6 @@ import config
 
 
 async def get_user_id(username):
-    client = TelegramClient(username, config.api_id, config.api_hash)
-    user = await client(GetFullUserRequest(username))
-    return user
+    async with TelegramClient(username, config.api_id, config.api_hash) as client:
+        user = await client(GetFullUserRequest(username))
+        return user

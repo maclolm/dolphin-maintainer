@@ -12,16 +12,17 @@ router = Router()
 
 
 # TODO: сделать inline-кнопку с функционалом renew_subscription к сообщению, если срок подписки закончился
-# --- Subscriber messages ---
 @router.message(F.text == BotButtons.DAYS_TO_EXPIRE)
 @permissions.is_sub
 async def days_to_expire(message: Message):
-    subname = ''
-    days = bot_main.db.get_sub_days(subname)
+    tg_user_id = message.from_user.id
+    days = bot_main.db.get_sub_days(tg_user_id)
     if days > 0:
-        await message.reply(f"ID: {message.from_user.id} Оплата твоей подписки истекает через {days} дней")
+        await message.reply(f"{message.from_user.first_name}, оплата твоей подписки истекает через {days} дней")
+    elif days == -1:
+        await message.reply(f"Похоже, твоя подписка бесконечна (по крайней мере пока что...)")
     else:
-        await message.reply(f"ID: {message.from_user.id} Твоя подписка не оплачена 🥺")
+        await message.reply(f"{message.from_user.first_name}, Твоя подписка не оплачена 🥺")
 
 
 @router.message(F.text == BotButtons.RENEW_SUBSCRIPTION)

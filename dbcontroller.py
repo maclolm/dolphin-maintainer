@@ -61,8 +61,10 @@ class DBcontroller:
         cmd = "SELECT tg_id FROM subscribers;"
         return self.__execute_cmd(cmd)
 
-    def get_sub_days(self, username):
-        return 0
+    def get_sub_days(self, tg_id):
+        cmd = f"SELECT sub_days FROM subscribers WHERE tg_id = {tg_id};"
+        (days,) = self.__execute_cmd(cmd)[0]
+        return days
 
     def get_expired_subs(self):
         pass
