@@ -19,6 +19,14 @@ class DBcontroller:
         except Exception as ex:
             logging.exception(f'Exception while executing cmd {cmd}: {ex}')
 
+    def __execute_and_commit_cmd(self, cmd):
+        try:
+            self.__execute_cmd(cmd)
+            self.conn.commit()
+        except Exception as ex:
+            logging.exception(f'Exception while commit cmd {cmd}: {ex}')
+            self.conn.rollback()
+
     def init(self):
         try:
             cmd = "CREATE TABLE IF NOT EXISTS subscribers (" \
@@ -52,6 +60,10 @@ class DBcontroller:
         except Exception as ex:
             logging.exception(f'Database init error {ex}')
             self.conn.rollback()
+
+    def add_to_sub_table(self, user_id, username, sub_days):
+        sql = f"INSERT INTO subscribers (tg_id, username, status, sub_days) VALUES ({user_id}, '{username}', 'ACTUAL', {sub_days});"
+        self.__execute_and_commit_cmd(sql)
 
     def get_owner_ids(self):
         cmd = "SELECT tg_id FROM owners;"
