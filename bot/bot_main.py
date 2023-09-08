@@ -9,6 +9,10 @@ from dbcontroller import DBcontroller
 logging.basicConfig(level=logging.INFO)
 db = DBcontroller(config.dbfile)
 
+class SubStatus:
+    ACTUAL = 1
+    UNKNOWN = 0
+    EXPIRED = -1
 
 async def main():
     db.init()

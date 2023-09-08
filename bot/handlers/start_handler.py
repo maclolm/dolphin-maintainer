@@ -12,6 +12,7 @@ import config
 router = Router()
 
 
+
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     logging.info(f'User {message.from_user.username}:{message.from_user.id} start chat')

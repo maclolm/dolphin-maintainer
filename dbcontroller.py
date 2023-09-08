@@ -1,6 +1,9 @@
 import sqlite3
 import logging
 
+class ExistsError(BaseException):
+    pass
+
 
 class DBcontroller:
     def __init__(self, db):
@@ -62,7 +65,11 @@ class DBcontroller:
             self.conn.rollback()
 
     def add_to_sub_table(self, user_id, username, sub_days):
-        sql = f"INSERT INTO subscribers (tg_id, username, status, sub_days) VALUES ({user_id}, '{username}', 'ACTUAL', {sub_days});"
+        sql = f"INSERT INTO subscribers (tg_id, username, status, sub_days) VALUES ({user_id}, '{username}', '1', {sub_days});"
+        self.__execute_and_commit_cmd(sql)
+
+    def add_to_owner_table(self, user_id, username):
+        sql = f"INSERT INTO owners (tg_id, username) VALUES ({user_id}, '{username}');"
         self.__execute_and_commit_cmd(sql)
 
     def get_owner_ids(self):
@@ -78,5 +85,20 @@ class DBcontroller:
         (days,) = self.__execute_cmd(cmd)[0]
         return days
 
+    def get_sub_stats(self, username):
+        cmd = f"SELECT sub_days, status FROM subscribers WHERE username = '{username}';"
+        res = self.__execute_cmd(cmd)
+        if len(res) == 0:
+            raise ExistsError()
+        (days, status) = res[0]
+        return days, status
+
+    def get_all_subs(self):
+        cmd = "SELECT * FROM subscribers"
+        res = self.__execute_cmd(cmd)
+        return res
+
     def get_expired_subs(self):
-        pass
+        cmd = "SELECT * FROM subscribers WHERE status = '-1'"
+        res = self.__execute_cmd(cmd)
+        return res
