@@ -12,7 +12,6 @@ db = DataBaseController(config.dbfile)
 
 class SubStatus:
     ACTUAL = 1
-    UNKNOWN = 0
     EXPIRED = -1
 
 

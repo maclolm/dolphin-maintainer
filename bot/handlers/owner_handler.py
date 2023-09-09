@@ -37,7 +37,7 @@ async def sub_username_chosen(message: Message, state: FSMContext):
         await state.clear()
         return
 
-    await state.update_data(username=message.text)
+    await state.update_data(username=username)
     await state.update_data(tg_id=user_id)
 
     await message.answer(text="Отлично. Задайте начальное количество дней подписки (-1: бессрочно)")
@@ -52,7 +52,7 @@ async def sub_start_subscription_days_chosen(message: Message, state: FSMContext
     start_sub_days = user_data['start_sub_days']
     user_id = user_data['tg_id']
 
-    await message.answer(f"Добавление {username}...")
+    await message.answer(f"Добавление {username} ...")
     bot_main.db.add_to_sub_table(user_id, username, start_sub_days)
 
     await message.answer(f"Пользователь {username} id: {user_id} успешно добавлен таблицу подписчиков.")
@@ -92,11 +92,12 @@ async def owner_username_chosen(message: Message, state: FSMContext):
 
 @router.message(F.text == BotButtons.STATS_FOR_OWNER)
 @permissions.is_owner
-async def get_global_stats(message: Message):
+async def get_global_stats(message: Message, _):
     subs = bot_main.db.get_all_subs()
-    subs_string = '[TG ID]     NICKNAME | DAYS | STATUS\n'
+    subs_string = 'ID|  [NICKNAME]  -  [STATUS]:[DAYS]\n'
     for sub in subs:
-        sub_str = '%10 %20 %5 %7'.format(sub[0], sub[1], sub[2], sub[3])
+        # 0 - id, 2 - nick, 3 - status, 4 - days
+        sub_str = '{:<d} | [{:<s}]  -  [{:<s}]:[{:<d}]\n'.format(sub[0], sub[2], sub[3], sub[4])
         subs_string += sub_str
 
     await message.answer(subs_string)
@@ -174,7 +175,7 @@ async def delete_owner(message: Message, state: FSMContext):
 @router.message(DeleteOwnerForm.waiting_for_username)
 async def owner_username_chosen(message: Message, state: FSMContext):
     username = message.text
-    await message.answer(f"Удаление {username}...")
+    await message.answer(f"Удаление {username} ...")
     try:
         user_id = await get_user_id(username)
         bot_main.db.delete_from_owner_table(user_id)

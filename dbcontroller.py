@@ -66,7 +66,7 @@ class DataBaseController:
             self.conn.rollback()
 
     def add_to_sub_table(self, user_id, username, sub_days):
-        sql = f"INSERT INTO subscribers (tg_id, username, status, sub_days) VALUES ({user_id}, '{username}', '1', {sub_days});"
+        sql = f"INSERT INTO subscribers (tg_id, username, status, sub_days) VALUES ({user_id}, '{username}', 'ACTUAL', {sub_days});"
         self.__execute_and_commit_cmd(sql)
 
     def add_to_owner_table(self, user_id, username):
