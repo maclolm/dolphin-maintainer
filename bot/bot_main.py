@@ -4,15 +4,17 @@ import config
 from aiogram import Bot, Dispatcher
 
 from handlers import owner_handler, start_handler, sub_handler
-from dbcontroller import DBcontroller
+from dbcontroller import DataBaseController
 
 logging.basicConfig(level=logging.INFO)
-db = DBcontroller(config.dbfile)
+db = DataBaseController(config.dbfile)
+
 
 class SubStatus:
     ACTUAL = 1
     UNKNOWN = 0
     EXPIRED = -1
+
 
 async def main():
     db.init()

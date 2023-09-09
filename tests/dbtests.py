@@ -1,6 +1,6 @@
-from dbcontroller import DBcontroller
+from dbcontroller import DataBaseController
 
 if __name__ == "__main__":
     dbfile = "dolphin-subscribers.db"
-    db = DBcontroller(dbfile)
+    db = DataBaseController(dbfile)
     db.init()

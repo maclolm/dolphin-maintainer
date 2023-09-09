@@ -6,7 +6,7 @@ from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 
 from bot import bot_main
 from bot.messages import BotMessages, BotButtons
-from dbcontroller import DBcontroller
+from dbcontroller import DataBaseController
 import config
 
 router = Router()
@@ -33,6 +33,7 @@ async def cmd_start(message: Message):
         owner_buttons = [
             [KeyboardButton(text=BotButtons.STATS_FOR_OWNER), KeyboardButton(text=BotButtons.GET_SUB_INFO)],
             [KeyboardButton(text=BotButtons.ADD_SUB), KeyboardButton(text=BotButtons.DEL_SUB)],
+            [KeyboardButton(text=BotButtons.ADD_OWNER), KeyboardButton(text=BotButtons.DEL_OWNER)]
         ]
         kb.extend(owner_buttons)
 

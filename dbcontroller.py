@@ -1,11 +1,12 @@
 import sqlite3
 import logging
 
+
 class ExistsError(BaseException):
     pass
 
 
-class DBcontroller:
+class DataBaseController:
     def __init__(self, db):
         self.conn = sqlite3.connect(db)
 
@@ -72,6 +73,14 @@ class DBcontroller:
         sql = f"INSERT INTO owners (tg_id, username) VALUES ({user_id}, '{username}');"
         self.__execute_and_commit_cmd(sql)
 
+    def delete_from_sub_table(self, user_id):
+        sql = f"DELETE FROM subscribers WHERE tg_id={user_id}"
+        self.__execute_and_commit_cmd(sql)
+
+    def delete_from_owner_table(self, user_id):
+        sql = f"DELETE FROM owners WHERE tg_id={user_id}"
+        self.__execute_and_commit_cmd(sql)
+
     def get_owner_ids(self):
         cmd = "SELECT tg_id FROM owners;"
         return self.__execute_cmd(cmd)
@@ -85,8 +94,8 @@ class DBcontroller:
         (days,) = self.__execute_cmd(cmd)[0]
         return days
 
-    def get_sub_stats(self, username):
-        cmd = f"SELECT sub_days, status FROM subscribers WHERE username = '{username}';"
+    def get_sub_stats(self, tg_id):
+        cmd = f"SELECT sub_days, status FROM subscribers WHERE tg_id = '{tg_id}';"
         res = self.__execute_cmd(cmd)
         if len(res) == 0:
             raise ExistsError()
