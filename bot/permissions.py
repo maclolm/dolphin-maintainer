@@ -6,21 +6,21 @@ import config
 # TODO: закрывать в декораторах подключение к бд (если оно не закрывается, проверить)
 def is_owner(func):
     async def wrapper(*args, **kwargs):
-        db = dbcontroller.DataBaseController(config.dbfile)
-        (message,) = args
-        sub_id = message.from_user.id
-        if (sub_id,) in db.get_owner_ids():
-            return await func(message, kwargs['state'])
-        return
+        with dbcontroller.DataBaseController(config.dbfile) as db:
+            (message,) = args
+            sub_id = message.from_user.id
+            if (sub_id,) in db.get_owner_ids():
+                return await func(message, kwargs['state'])
+            return
     return wrapper
 
 
 def is_sub(func):
     async def wrapper(*args):
-        db = dbcontroller.DataBaseController(config.dbfile)
-        (message,) = args
-        sub_id = message.from_user.id
-        if (sub_id,) in db.get_sub_ids():
-            return await func(*args)
-        return
+        with dbcontroller.DataBaseController(config.dbfile) as db:
+            (message,) = args
+            sub_id = message.from_user.id
+            if (sub_id,) in db.get_sub_ids():
+                return await func(*args)
+            return
     return wrapper

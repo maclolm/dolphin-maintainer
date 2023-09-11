@@ -10,6 +10,12 @@ class DataBaseController:
     def __init__(self, db):
         self.conn = sqlite3.connect(db)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.conn.close()
+
     def __execute_cmd(self, cmd):
         try:
             logging.debug(f'Execute CMD: {cmd}')
