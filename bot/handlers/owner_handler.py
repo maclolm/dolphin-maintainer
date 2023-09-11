@@ -94,10 +94,10 @@ async def owner_username_chosen(message: Message, state: FSMContext):
 @permissions.is_owner
 async def get_global_stats(message: Message, _):
     subs = bot_main.db.get_all_subs()
-    subs_string = 'ID|  [NICKNAME]  -  [STATUS]:[DAYS]\n'
+    subs_string = 'ID|  [NICKNAME]  -  [STATUS | DAYS]\n'
     for sub in subs:
-        # 0 - id, 2 - nick, 3 - status, 4 - days
-        sub_str = '{:<d} | [{:<s}]  -  [{:<s}]:[{:<d}]\n'.format(sub[0], sub[2], sub[3], sub[4])
+        # 0 - id, 3 - nick, 4 - status, 5 - days
+        sub_str = '{:<d} | [{:<s}]  -  [{:<s} | {:<d}]\n'.format(sub[0], sub[3], sub[4], sub[5])
         subs_string += sub_str
 
     await message.answer(subs_string)

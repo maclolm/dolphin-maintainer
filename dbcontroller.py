@@ -120,3 +120,11 @@ class DataBaseController:
         cmd = "SELECT * FROM subscribers WHERE status = '-1'"
         res = self.__execute_cmd(cmd)
         return res
+
+    def decrease_subscription_days(self):
+        sql = "UPDATE subscribers SET sub_days = sub_days - 1 WHERE sub_days > 0"
+        self.__execute_and_commit_cmd(sql)
+
+    def recalc_sub_status(self):
+        sql = "UPDATE subscribers SET status = 'EXPIRED' WHERE sub_days = 0"
+        self.__execute_and_commit_cmd(sql)
