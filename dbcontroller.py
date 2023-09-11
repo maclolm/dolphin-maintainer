@@ -1,6 +1,8 @@
 import sqlite3
 import logging
 
+from datetime import datetime
+
 
 class ExistsError(BaseException):
     pass
@@ -43,6 +45,7 @@ class DataBaseController:
                   "     id INTEGER PRIMARY KEY," \
                   "     tg_id INT NOT NULL," \
                   "     username CHAR NOT NULL," \
+                  "     creation_datetime DATETIME," \
                   "     status CHAR NOT NULL," \
                   "     sub_days INT" \
                   ");"
@@ -72,7 +75,7 @@ class DataBaseController:
             self.conn.rollback()
 
     def add_to_sub_table(self, user_id, username, sub_days):
-        sql = f"INSERT INTO subscribers (tg_id, username, status, sub_days) VALUES ({user_id}, '{username}', 'ACTUAL', {sub_days});"
+        sql = f"INSERT INTO subscribers (tg_id, username, creation_datetime, status, sub_days) VALUES ({user_id}, '{username}', '{datetime.now()}', 'ACTUAL', {sub_days});"
         self.__execute_and_commit_cmd(sql)
 
     def add_to_owner_table(self, user_id, username):
