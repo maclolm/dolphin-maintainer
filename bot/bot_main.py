@@ -14,8 +14,9 @@ bot = Bot(token=config.token)
 
 
 class SubStatus:
-    ACTUAL = 1
-    EXPIRED = -1
+    ACTUAL = 2
+    EXPIRED = -2
+    EXPIRED_SOON = -1
 
 
 async def main():

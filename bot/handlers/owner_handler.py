@@ -187,3 +187,4 @@ async def owner_username_chosen(message: Message, state: FSMContext):
     await message.answer(f"Пользователь {username} id: {user_id} успешно удалён из таблицы владельцев")
     await state.clear()
 # -- End owner delete section
+

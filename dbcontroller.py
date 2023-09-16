@@ -46,7 +46,7 @@ class DataBaseController:
                   "     tg_id INT NOT NULL," \
                   "     username CHAR NOT NULL," \
                   "     creation_datetime DATETIME," \
-                  "     status CHAR NOT NULL," \
+                  "     status INT NOT NULL," \
                   "     sub_days INT" \
                   ");"
             self.__execute_cmd(cmd)
@@ -63,7 +63,7 @@ class DataBaseController:
                   "     id INTEGER PRIMARY KEY," \
                   "     sub_id CHAR NOT NULL, " \
                   "     amount INT NOT NULL," \
-                  "     status CHAR NOT NULL," \
+                  "     status INT NOT NULL," \
                   "     date DATETIME" \
                   ");"
             self.__execute_cmd(cmd)
@@ -117,7 +117,7 @@ class DataBaseController:
         return res
 
     def get_expired_subs(self):
-        cmd = "SELECT * FROM subscribers WHERE status = '-1'"
+        cmd = "SELECT tg_id, sub_days FROM subscribers WHERE status = -1 OR status = -2"
         res = self.__execute_cmd(cmd)
         return res
 
@@ -126,5 +126,7 @@ class DataBaseController:
         self.__execute_and_commit_cmd(sql)
 
     def recalc_sub_status(self):
-        sql = "UPDATE subscribers SET status = 'EXPIRED' WHERE sub_days = 0"
+        sql = "UPDATE subscribers SET status = CASE " \
+              "WHEN (sub_days = 0) THEN -2 " \
+              "WHEN (sub_days < 3 AND sub_days > 0) THEN -1 END;"
         self.__execute_and_commit_cmd(sql)

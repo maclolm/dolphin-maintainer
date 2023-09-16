@@ -28,4 +28,19 @@ async def days_to_expire(message: Message):
 @router.message(F.text == BotButtons.RENEW_SUBSCRIPTION)
 @permissions.is_sub
 async def renew_subscription(message: Message):
-    await message.reply(f"Оплату подписки ещё не добавили :(")
+    await message.reply(f"Продление подписки ещё не добавили :(")
+
+
+async def send_subscription_remind_message(db):
+    expired_subs = bot_main.db.get_expired_subs()
+
+    # TODO: Inline-кнопка для оплаты
+    for tg_id, days_to_expire in expired_subs:
+        if days_to_expire == 0:
+            await bot_main.bot.send_message(text=f"Твоя подписка закончилась.", chat_id=tg_id)
+            continue
+        await bot_main.bot.send_message(
+            text=f"Твоя подписка заканчивается через {days_to_expire} дней. Не забудь продлить.",
+            chat_id=tg_id
+        )
+
