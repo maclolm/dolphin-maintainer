@@ -5,7 +5,7 @@ import yaml
 
 from aiogram import Bot, Dispatcher
 
-from handlers import owner_handler, start_handler, sub_handler
+from bot.handlers import owner_handler, start_handler, sub_handler
 from dbcontroller import DataBaseController
 from scheduler import Scheduler
 
@@ -25,8 +25,7 @@ def parse_config(file):
         session_username=data["session_username"],
         token=data["token"],
         api_hash=data["api_hash"],
-        api_id=data["api_id"],
-        db_file=data["dbfile"]
+        api_id=data["api_id"]
     )
 
     return config
@@ -41,7 +40,7 @@ async def main():
         dispatcher = Dispatcher()
         bot = Bot(token=config.token)
 
-        scheduler = Scheduler(config.db_file, bot)
+        scheduler = Scheduler(DB_FILE, bot)
         scheduler.start_polling()
 
         dispatcher.include_routers(owner_handler.router, start_handler.router, sub_handler.router)
@@ -50,7 +49,7 @@ async def main():
         await bot.session.close()
 
     except Exception as ex:
-        logging.error(ex)
+        logging.exception(ex)
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())

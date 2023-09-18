@@ -1,15 +1,13 @@
-import logging
-
 from aiogram import Router, F
-from aiogram.filters import Command
-from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import Message
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from dbcontroller import ExistsError
-from bot.messages import BotMessages, BotButtons
+from bot.messages import BotButtons
 from bot.handlers.routers_helper import get_user_id
-from bot import permissions, main
+from bot import permissions
+import main
 
 router = Router()
 

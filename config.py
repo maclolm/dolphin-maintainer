@@ -7,4 +7,3 @@ class Config:
     token: str
     api_hash: str
     api_id: int
-    db_file: str

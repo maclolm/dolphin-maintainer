@@ -1,7 +1,4 @@
-{
-    "session_username": "",
-    "token": "6506316012:AAGgyMp2-euOUBK2vRAJfKwDVZPSzkbog8c"
-    "api_hash": "070b19334dfc87826ad29eb3b97a78e7",
-    "api_id": "23031421",
-    "dbfile": ""
-}
+session_username: ""
+token: ""
+api_hash: ""
+api_id:

@@ -5,6 +5,7 @@ from datetime import datetime
 
 from datatypes import SubStatus
 
+
 class ExistsError(BaseException):
     pass
 

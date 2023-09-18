@@ -4,10 +4,8 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 
-from bot import main
-from bot.messages import BotMessages, BotButtons
-from dbcontroller import DataBaseController
-import config
+import main
+from bot.messages import BotButtons
 
 router = Router()
 

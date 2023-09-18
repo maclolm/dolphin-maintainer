@@ -1,12 +1,9 @@
-import logging
-
 from aiogram import Router, F
-from aiogram.filters import Command
-from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import Message
 
 from bot import permissions
-from bot.messages import BotMessages, BotButtons
-from bot import main
+from bot.messages import BotButtons
+import main
 
 router = Router()
 
