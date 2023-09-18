@@ -4,7 +4,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 
-from bot import bot_main
+from bot import main
 from bot.messages import BotMessages, BotButtons
 from dbcontroller import DataBaseController
 import config
@@ -20,14 +20,14 @@ async def cmd_start(message: Message):
     ]
     kb = unsub_buttons
 
-    subs = bot_main.db.get_sub_ids()
+    subs = main.db.get_sub_ids()
     if (message.from_user.id,) in subs:
         sub_buttons = [
             [KeyboardButton(text=BotButtons.DAYS_TO_EXPIRE), KeyboardButton(text=BotButtons.RENEW_SUBSCRIPTION)]
         ]
         kb.extend(sub_buttons)
 
-    owners = bot_main.db.get_owner_ids()
+    owners = main.db.get_owner_ids()
     if (message.from_user.id,) in owners:
         owner_buttons = [
             [KeyboardButton(text=BotButtons.STATS_FOR_OWNER), KeyboardButton(text=BotButtons.GET_SUB_INFO)],

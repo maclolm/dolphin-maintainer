@@ -8,8 +8,8 @@ from aiogram.fsm.context import FSMContext
 
 from dbcontroller import ExistsError
 from bot.messages import BotMessages, BotButtons
-from .routers_helper import get_user_id
-from bot import permissions, bot_main
+from bot.handlers.routers_helper import get_user_id
+from bot import permissions, main
 
 router = Router()
 
@@ -53,7 +53,7 @@ async def sub_start_subscription_days_chosen(message: Message, state: FSMContext
     user_id = user_data['tg_id']
 
     await message.answer(f"Добавление {username} ...")
-    bot_main.db.add_to_sub_table(user_id, username, start_sub_days)
+    main.db.add_to_sub_table(user_id, username, start_sub_days)
 
     await message.answer(f"Пользователь {username} id: {user_id} успешно добавлен таблицу подписчиков.")
     await state.clear()
@@ -83,7 +83,7 @@ async def owner_username_chosen(message: Message, state: FSMContext):
         return
 
     await message.answer(f"Добавление {username}...")
-    bot_main.db.add_to_owner_table(user_id, username)
+    main.db.add_to_owner_table(user_id, username)
 
     await message.answer(f"Пользователь {username} id: {user_id} успешно добавлен таблицу владельцев.")
     await state.clear()
@@ -93,7 +93,7 @@ async def owner_username_chosen(message: Message, state: FSMContext):
 @router.message(F.text == BotButtons.STATS_FOR_OWNER)
 @permissions.is_owner
 async def get_global_stats(message: Message, _):
-    subs = bot_main.db.get_all_subs()
+    subs = main.db.get_all_subs()
     subs_string = 'ID|  [NICKNAME]  -  [STATUS | DAYS]\n'
     for sub in subs:
         # 0 - id, 3 - nick, 4 - status, 5 - days
@@ -120,7 +120,7 @@ async def sub_username_chosen(message: Message, state: FSMContext):
     username = message.text
     try:
         user_id = await get_user_id(username)
-        days, status = bot_main.db.get_sub_stats(user_id)
+        days, status = main.db.get_sub_stats(user_id)
     except ExistsError:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
         await state.clear()
@@ -149,7 +149,7 @@ async def sub_username_chosen(message: Message, state: FSMContext):
     await message.answer(f"Удаление {username}...")
     try:
         user_id = await get_user_id(username)
-        bot_main.db.delete_from_sub_table(user_id)
+        main.db.delete_from_sub_table(user_id)
     except ExistsError:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
         await state.clear()
@@ -178,7 +178,7 @@ async def owner_username_chosen(message: Message, state: FSMContext):
     await message.answer(f"Удаление {username} ...")
     try:
         user_id = await get_user_id(username)
-        bot_main.db.delete_from_owner_table(user_id)
+        main.db.delete_from_owner_table(user_id)
     except ExistsError:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
         await state.clear()

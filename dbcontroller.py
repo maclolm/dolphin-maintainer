@@ -3,6 +3,7 @@ import logging
 
 from datetime import datetime
 
+from datatypes import SubStatus
 
 class ExistsError(BaseException):
     pass
@@ -117,7 +118,8 @@ class DataBaseController:
         return res
 
     def get_expired_subs(self):
-        cmd = "SELECT tg_id, sub_days FROM subscribers WHERE status = -1 OR status = -2"
+        cmd = f"SELECT tg_id, sub_days FROM subscribers " \
+              f"WHERE status = {SubStatus.EXPIRED} OR status = {SubStatus.EXPIRED_SOON}"
         res = self.__execute_cmd(cmd)
         return res
 
@@ -127,6 +129,6 @@ class DataBaseController:
 
     def recalc_sub_status(self):
         sql = "UPDATE subscribers SET status = CASE " \
-              "WHEN (sub_days = 0) THEN -2 " \
-              "WHEN (sub_days < 3 AND sub_days > 0) THEN -1 END;"
+              f"WHEN (sub_days = 0) THEN {SubStatus.EXPIRED} " \
+              f"WHEN (sub_days < 3 AND sub_days > 0) THEN {SubStatus.EXPIRED_SOON} END;"
         self.__execute_and_commit_cmd(sql)
