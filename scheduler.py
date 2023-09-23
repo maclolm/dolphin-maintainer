@@ -5,6 +5,7 @@ from dbcontroller import DataBaseController
 
 log = getLogger('scheduler')
 RECALC_TUSK_TIME = 4
+UPDATE_SUBS_INFO_TIME = 5
 REMINDING_TASK_TIME = 5
 
 
@@ -44,11 +45,15 @@ class Scheduler(AsyncIOScheduler):
         log.info('Reminding subs about subscription started by scheduler')
         await self.__send_subscription_remind_message()
 
+    def __schedule_update_subs_info(self):
+        pass
+
     def __schedule_recalc_tasks(self):
         self.__decrease_sub_days()
         self.__recalc_sub_status()
 
     def start_polling(self):
+        self.add_job(self.__schedule_update_subs_info(), "cron", hour=UPDATE_SUBS_INFO_TIME)
         self.add_job(self.__schedule_recalc_tasks, "cron", hour=RECALC_TUSK_TIME)
         self.add_job(self.__schedule_reminding_task, "cron", hour=REMINDING_TASK_TIME)
         self.start()

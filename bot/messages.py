@@ -6,6 +6,7 @@ class BotButtons:
     # Un-sub & Sub buts
     INFO = "Информацияℹ"
     TARIFF = "Тариф📈"
+    REFRESH = "Refresh🔁"
 
     # Sub buts
     DAYS_TO_EXPIRE = "Статус подписки📅"

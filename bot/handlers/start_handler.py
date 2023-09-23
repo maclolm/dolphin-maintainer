@@ -12,9 +12,11 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: Message):
-    logging.info(f'User {message.from_user.username}:{message.from_user.id} start chat')
+    logging.info(f'User {message.from_user.username}:{message.from_user.id} start / restart chat')
     unsub_buttons = [
-        [KeyboardButton(text=BotButtons.INFO), KeyboardButton(text=BotButtons.TARIFF)]
+        [KeyboardButton(text=BotButtons.INFO),
+         KeyboardButton(text=BotButtons.TARIFF),
+         KeyboardButton(text=BotButtons.REFRESH)]
     ]
     kb = unsub_buttons
 
@@ -40,6 +42,11 @@ async def cmd_start(message: Message):
         input_field_placeholder='Выберите действие.'
     )
     await message.answer("Привет👋. Я тестовый бот управления подпиской", reply_markup=keyboard)
+
+
+@router.message(F.text == BotButtons.REFRESH)
+async def restart(message: Message):
+    await cmd_start(message)
 
 
 @router.message(F.text == BotButtons.INFO)
