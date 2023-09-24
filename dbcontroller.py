@@ -131,12 +131,12 @@ class DataBaseController:
         res = self.__execute_cmd(cmd)
         return res
 
-    def update_sub_tg_id(self, old_tg_id, new_tg_id):
-        sql = f"UPDATE subscribers SET tg_id = {new_tg_id} WHERE tg_id = {old_tg_id}"
+    def update_sub_tg_username(self, tg_id, actual_username):
+        sql = f"UPDATE subscribers SET username = '{actual_username}' WHERE tg_id = {tg_id}"
         self.__execute_and_commit_cmd(sql)
 
-    def update_owner_tg_id(self, old_tg_id, new_tg_id):
-        sql = f"UPDATE owners SET tg_id = {new_tg_id} WHERE tg_id = {old_tg_id}"
+    def update_owner_tg_username(self, tg_id, actual_username):
+        sql = f"UPDATE owners SET username = '{actual_username}' WHERE tg_id = {tg_id}"
         self.__execute_and_commit_cmd(sql)
 
     def decrease_subscription_days(self):

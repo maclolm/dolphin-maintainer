@@ -4,10 +4,8 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from dbcontroller import ExistsError
-from bot.middlewares import OwnerMessageMiddleware
 from bot.messages import BotButtons
 from bot.handlers.routers_helper import get_user_id
-from bot import permissions
 
 import main
 

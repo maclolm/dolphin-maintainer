@@ -2,6 +2,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import Message
 from typing import Callable, Dict, Any, Awaitable
 
+from bot.messages import BotMessages
 from config import SessionData
 import dbcontroller
 
@@ -51,7 +52,7 @@ class OwnerMessageMiddleware(BaseMiddleware):
             await data['state'].update_data(session_data=self.client_session_data)
             return await handler(event, data)
 
-        await event.answer('Недостаточно прав для данного действия. Воспользуйтесь кнопкой обновления.')
+        await event.answer(BotMessages.NO_PERMISSION)
 
 
 class SubscriberMessageMiddleware(BaseMiddleware):
@@ -66,4 +67,4 @@ class SubscriberMessageMiddleware(BaseMiddleware):
         if _is_subscriber(sub_id):
             return await handler(event, data)
 
-        await event.answer(f'Недостаточно прав для данного действия. Воспользуйтесь кнопкой обновления.')
+        await event.answer(BotMessages.NO_PERMISSION)
