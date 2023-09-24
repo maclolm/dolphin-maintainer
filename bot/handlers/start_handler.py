@@ -3,6 +3,8 @@ import logging
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
+from bot.handlers.routers_helper import refresh_all_users
+from aiogram.fsm.context import FSMContext
 
 import main
 from bot.messages import BotButtons
@@ -11,7 +13,7 @@ router = Router()
 
 
 @router.message(Command("start"))
-async def cmd_start(message: Message):
+async def cmd_start(message: Message, state):
     logging.info(f'User {message.from_user.username}:{message.from_user.id} start / restart chat')
     unsub_buttons = [
         [KeyboardButton(text=BotButtons.INFO),
@@ -29,6 +31,7 @@ async def cmd_start(message: Message):
 
     owners = main.db.get_owner_ids()
     if (message.from_user.id,) in owners:
+        # await refresh_all_users(main.db)
         owner_buttons = [
             [KeyboardButton(text=BotButtons.STATS_FOR_OWNER), KeyboardButton(text=BotButtons.GET_SUB_INFO)],
             [KeyboardButton(text=BotButtons.ADD_SUB), KeyboardButton(text=BotButtons.DEL_SUB)],
@@ -45,8 +48,8 @@ async def cmd_start(message: Message):
 
 
 @router.message(F.text == BotButtons.REFRESH)
-async def restart(message: Message):
-    await cmd_start(message)
+async def restart(message: Message, state: FSMContext):
+    await cmd_start(message, state)
 
 
 @router.message(F.text == BotButtons.INFO)

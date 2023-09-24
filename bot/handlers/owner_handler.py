@@ -4,9 +4,11 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from dbcontroller import ExistsError
+from bot.middlewares import OwnerMessageMiddleware
 from bot.messages import BotButtons
 from bot.handlers.routers_helper import get_user_id
 from bot import permissions
+
 import main
 
 router = Router()
@@ -19,7 +21,6 @@ class AddSubscriberForm(StatesGroup):
 
 
 @router.message(F.text == BotButtons.ADD_SUB)
-@permissions.is_owner
 async def sub_add(message: Message, state: FSMContext):
     await message.reply(f"Введите username пользователя в телеграм для добавления в подписчики.")
     await state.set_state(AddSubscriberForm.waiting_for_username)
@@ -28,8 +29,9 @@ async def sub_add(message: Message, state: FSMContext):
 @router.message(AddSubscriberForm.waiting_for_username)
 async def sub_username_chosen(message: Message, state: FSMContext):
     username = message.text
+    user_data = await state.get_data()
     try:
-        user_id = await get_user_id(username)
+        user_id = await get_user_id(username, user_data['session_data'])
     except ValueError as ex:
         await message.answer(text=f"Похоже, пользователя с username '{username}' не существует.")
         await state.clear()
@@ -64,7 +66,6 @@ class AddOwnerForm(StatesGroup):
 
 
 @router.message(F.text == BotButtons.ADD_OWNER)
-@permissions.is_owner
 async def owner_add(message: Message, state: FSMContext):
     await message.answer(f"Введите username пользователя в телеграм для добавления в владельцы")
     await state.set_state(AddOwnerForm.waiting_for_username)
@@ -73,8 +74,9 @@ async def owner_add(message: Message, state: FSMContext):
 @router.message(AddOwnerForm.waiting_for_username)
 async def owner_username_chosen(message: Message, state: FSMContext):
     username = message.text
+    user_data = await state.get_data()
     try:
-        user_id = await get_user_id(username)
+        user_id = await get_user_id(username, user_data['session_data'])
     except ValueError as ex:
         await message.answer(text=f"Похоже, пользователя с username '{username}' не существует.")
         await state.clear()
@@ -89,13 +91,11 @@ async def owner_username_chosen(message: Message, state: FSMContext):
 
 
 @router.message(F.text == BotButtons.STATS_FOR_OWNER)
-@permissions.is_owner
-async def get_global_stats(message: Message, _):
+async def get_global_stats(message: Message):
     subs = main.db.get_all_subs()
     subs_string = 'ID|  [NICKNAME]  -  [STATUS | DAYS]\n'
-    for sub in subs:
-        # 0 - id, 3 - nick, 4 - status, 5 - days
-        sub_str = '{:<d} | [{:<s}]  -  [{:<s} | {:<d}]\n'.format(sub[0], sub[3], sub[4], sub[5])
+    for sub_id, _, username, creation_datetime, status, sub_days in subs:
+        sub_str = '{:<d} | [{:<s}]  -  [{:<s} | {:<d}]\n'.format(sub_id, username, status, sub_days)
         subs_string += sub_str
 
     await message.answer(subs_string)
@@ -107,7 +107,6 @@ class GetSubStatsForm(StatesGroup):
 
 
 @router.message(F.text == BotButtons.GET_SUB_INFO)
-@permissions.is_owner
 async def get_sub_info(message: Message, state: FSMContext):
     await message.reply(f"Введите *username* пользователя в телеграм для получения статистики")
     await state.set_state(GetSubStatsForm.waiting_for_username)
@@ -116,8 +115,9 @@ async def get_sub_info(message: Message, state: FSMContext):
 @router.message(GetSubStatsForm.waiting_for_username)
 async def sub_username_chosen(message: Message, state: FSMContext):
     username = message.text
+    user_data = await state.get_data()
     try:
-        user_id = await get_user_id(username)
+        user_id = await get_user_id(username, user_data['session_data'])
         days, status = main.db.get_sub_stats(user_id)
     except ExistsError:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
@@ -135,7 +135,6 @@ class DeleteSubscriberForm(StatesGroup):
 
 
 @router.message(F.text == BotButtons.DEL_SUB)
-@permissions.is_owner
 async def delete_sub(message: Message, state: FSMContext):
     await message.reply(f"Введите username пользователя в телеграм для удаления из таблицы подписчиков")
     await state.set_state(DeleteSubscriberForm.waiting_for_username)
@@ -144,9 +143,10 @@ async def delete_sub(message: Message, state: FSMContext):
 @router.message(DeleteSubscriberForm.waiting_for_username)
 async def sub_username_chosen(message: Message, state: FSMContext):
     username = message.text
+    user_data = await state.get_data()
     await message.answer(f"Удаление {username}...")
     try:
-        user_id = await get_user_id(username)
+        user_id = await get_user_id(username, user_data['session_data'])
         main.db.delete_from_sub_table(user_id)
     except ExistsError:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
@@ -164,7 +164,6 @@ class DeleteOwnerForm(StatesGroup):
 
 
 @router.message(F.text == BotButtons.DEL_OWNER)
-@permissions.is_owner
 async def delete_owner(message: Message, state: FSMContext):
     await message.reply(f"Введите username пользователя в телеграм для удаления из таблицы владельцев")
     await state.set_state(DeleteOwnerForm.waiting_for_username)
@@ -173,9 +172,10 @@ async def delete_owner(message: Message, state: FSMContext):
 @router.message(DeleteOwnerForm.waiting_for_username)
 async def owner_username_chosen(message: Message, state: FSMContext):
     username = message.text
+    user_data = await state.get_data()
     await message.answer(f"Удаление {username} ...")
     try:
-        user_id = await get_user_id(username)
+        user_id = await get_user_id(username, user_data['session_data'])
         main.db.delete_from_owner_table(user_id)
     except ExistsError:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
@@ -185,4 +185,3 @@ async def owner_username_chosen(message: Message, state: FSMContext):
     await message.answer(f"Пользователь {username} id: {user_id} успешно удалён из таблицы владельцев")
     await state.clear()
 # -- End owner delete section
-

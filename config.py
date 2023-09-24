@@ -2,8 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Config:
+class SessionData:
     session_username: str
-    token: str
     api_hash: str
     api_id: int

@@ -1,10 +1,9 @@
 import dbcontroller
-import config
 
 
 def is_owner(func):
     async def wrapper(*args, **kwargs):
-        with dbcontroller.DataBaseController(config.dbfile) as db:
+        with dbcontroller.DataBaseController() as db:
             (message,) = args
             sub_id = message.from_user.id
             if (sub_id,) in db.get_owner_ids():
@@ -15,7 +14,7 @@ def is_owner(func):
 
 def is_sub(func):
     async def wrapper(*args):
-        with dbcontroller.DataBaseController(config.dbfile) as db:
+        with dbcontroller.DataBaseController() as db:
             (message,) = args
             sub_id = message.from_user.id
             if (sub_id,) in db.get_sub_ids():

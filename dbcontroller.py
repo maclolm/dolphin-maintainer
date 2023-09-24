@@ -5,13 +5,15 @@ from datetime import datetime
 
 from datatypes import SubStatus
 
+DEFAULT_DB_FILE = 'dolphin-subscribers.db'
+
 
 class ExistsError(BaseException):
     pass
 
 
 class DataBaseController:
-    def __init__(self, db):
+    def __init__(self, db=DEFAULT_DB_FILE):
         self.conn = sqlite3.connect(db)
 
     def __enter__(self):
@@ -118,11 +120,24 @@ class DataBaseController:
         res = self.__execute_cmd(cmd)
         return res
 
+    def get_all_owners(self):
+        cmd = "SELECT * FROM owners"
+        res = self.__execute_cmd(cmd)
+        return res
+
     def get_expired_subs(self):
         cmd = f"SELECT tg_id, sub_days FROM subscribers " \
               f"WHERE status = {SubStatus.EXPIRED} OR status = {SubStatus.EXPIRED_SOON}"
         res = self.__execute_cmd(cmd)
         return res
+
+    def update_sub_tg_id(self, old_tg_id, new_tg_id):
+        sql = f"UPDATE subscribers SET tg_id = {new_tg_id} WHERE tg_id = {old_tg_id}"
+        self.__execute_and_commit_cmd(sql)
+
+    def update_owner_tg_id(self, old_tg_id, new_tg_id):
+        sql = f"UPDATE owners SET tg_id = {new_tg_id} WHERE tg_id = {old_tg_id}"
+        self.__execute_and_commit_cmd(sql)
 
     def decrease_subscription_days(self):
         sql = "UPDATE subscribers SET sub_days = sub_days - 1 WHERE sub_days > 0"

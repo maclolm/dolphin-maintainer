@@ -3,14 +3,16 @@ from aiogram.types import Message
 
 from bot import permissions
 from bot.messages import BotButtons
+from bot.middlewares import SubscriberMessageMiddleware
+
 import main
 
 router = Router()
+router.message.middleware(SubscriberMessageMiddleware())
 
 
 # TODO: сделать inline-кнопку с функционалом renew_subscription к сообщению, если срок подписки закончился
 @router.message(F.text == BotButtons.DAYS_TO_EXPIRE)
-@permissions.is_sub
 async def days_to_expire(message: Message):
     tg_user_id = message.from_user.id
     days = main.db.get_sub_days(tg_user_id)
@@ -23,6 +25,5 @@ async def days_to_expire(message: Message):
 
 
 @router.message(F.text == BotButtons.RENEW_SUBSCRIPTION)
-@permissions.is_sub
 async def renew_subscription(message: Message):
     await message.reply(f"Продление подписки ещё не добавили :(")
