@@ -5,7 +5,7 @@ from datetime import datetime
 
 from datatypes import SubStatus
 
-DEFAULT_DB_FILE = 'dolphin-subscribers.db'
+DEFAULT_DB_FILE = '../dolphin-subscribers.db'
 
 
 class ExistsError(BaseException):

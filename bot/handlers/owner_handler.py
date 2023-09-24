@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from dbcontroller import ExistsError
+from dbcontroller.dbcontroller import ExistsError
 from bot.messages import BotButtons
 from bot.handlers.routers_helper import get_user_id
 

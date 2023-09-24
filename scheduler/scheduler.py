@@ -2,7 +2,7 @@ from logging import getLogger
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from config import SessionData
-from dbcontroller import DataBaseController
+from dbcontroller.dbcontroller import DataBaseController
 from bot.handlers.routers_helper import refresh_all_users
 
 log = getLogger('scheduler')

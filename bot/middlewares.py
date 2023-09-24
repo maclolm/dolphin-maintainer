@@ -4,7 +4,7 @@ from typing import Callable, Dict, Any, Awaitable
 
 from bot.messages import BotMessages
 from config import SessionData
-import dbcontroller
+from dbcontroller import dbcontroller
 
 
 def _is_owner(owner_id):
