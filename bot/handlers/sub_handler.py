@@ -1,7 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import Message
 
-from bot import permissions
 from bot.messages import BotButtons
 from bot.middlewares import SubscriberMessageMiddleware
 

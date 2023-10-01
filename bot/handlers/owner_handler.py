@@ -6,6 +6,9 @@ from aiogram.fsm.context import FSMContext
 from dbcontroller.dbcontroller import ExistsError
 from bot.messages import BotButtons
 from bot.handlers.routers_helper import get_user_id
+from datatypes import SubStatus
+
+import telethon
 
 import main
 
@@ -75,10 +78,14 @@ async def owner_username_chosen(message: Message, state: FSMContext):
     user_data = await state.get_data()
     try:
         user_id = await get_user_id(username, user_data['session_data'])
+    except telethon.errors.UsernameInvalidError as ex:
+        await message.answer(f"Пользователя c username '{username}' не существует в telegram")
+        return
     except ValueError as ex:
         await message.answer(text=f"Похоже, пользователя с username '{username}' не существует.")
-        await state.clear()
         return
+    finally:
+        await state.clear()
 
     await message.answer(f"Добавление {username}...")
     main.db.add_to_owner_table(user_id, username)
@@ -93,7 +100,7 @@ async def get_global_stats(message: Message):
     subs = main.db.get_all_subs()
     subs_string = 'ID|  [NICKNAME]  -  [STATUS | DAYS]\n'
     for sub_id, _, username, creation_datetime, status, sub_days in subs:
-        sub_str = '{:<d} | [{:<s}]  -  [{:<s} | {:<d}]\n'.format(sub_id, username, status, sub_days)
+        sub_str = '{:<d} | [{:<s}]  -  [{:<d} | {:<d}]\n'.format(sub_id, username, status, int(sub_days))
         subs_string += sub_str
 
     await message.answer(subs_string)
@@ -117,13 +124,16 @@ async def sub_username_chosen(message: Message, state: FSMContext):
     try:
         user_id = await get_user_id(username, user_data['session_data'])
         days, status = main.db.get_sub_stats(user_id)
+    except telethon.errors.UsernameInvalidError as ex:
+        await message.reply(f"Пользователя {username} не существует в telegram")
+        return
     except ExistsError:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
-        await state.clear()
         return
+    finally:
+        await state.clear()
 
     await message.reply(f"{username} | Статус: {status} | Дней: {days}")
-    await state.clear()
 # -- End sub stats section
 
 

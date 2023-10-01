@@ -9,7 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from bot.middlewares import StartMessageMiddleware, OwnerMessageMiddleware
 from bot.handlers import owner_handler, start_handler, sub_handler
 from dbcontroller.dbcontroller import DataBaseController
-from scheduler import Scheduler
+from scheduler.scheduler import Scheduler
 
 DEFAULT_CONFIG = "config.yaml"
 
