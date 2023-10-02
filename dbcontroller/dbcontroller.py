@@ -125,18 +125,23 @@ class DataBaseController:
 
     def get_all_subs(self):
         sql = SQlActions.GET_ALL_SUBS
-        res = self.__execute_cmd(sql)
-        return res
+        return self.__execute_cmd(sql)
 
     def get_all_owners(self):
         sql = SQlActions.GET_ALL_OWNERS
-        res = self.__execute_cmd(sql)
-        return res
+        return self.__execute_cmd(sql)
+
+    def get_all_subs_usernames(self):
+        sql = SQlActions.GET_SUBS_USERNAMES
+        return self.__execute_cmd(sql)
+
+    def get_all_owners_usernames(self):
+        sql = SQlActions.GET_OWNERS_USERNAMES
+        return self.__execute_cmd(sql)
 
     def get_expired_subs(self):
         sql = SQlActions.GET_EXPIRED_SUBS
-        res = self.__execute_cmd(sql)
-        return res
+        return self.__execute_cmd(sql)
 
     def update_sub_tg_username(self, tg_id, actual_username):
         sql = SQlActions.UPDATE_SUB_TG_USERNAME.format(actual_username=actual_username, tg_id=tg_id)
