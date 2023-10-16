@@ -1,7 +1,12 @@
+info_massage = "Текст с общей информацией о VIP-канале."
+have_no_permission = "Текст с ценами, тарифами, способами оплаты"
+tariff_info = "Текст с ценами и тарифами к оплате"
+
+
 class BotMessages:
-    INFO = "Текст с общей информацией о VIP-канале."
-    TARIFF_INFO = "Текст с ценами и тарифами к оплате"
-    NO_PERMISSION = "Недостаточно прав для данного действия. Воспользуйтесь кнопкой обновления или обратитесь к администратору."
+    INFO = info_massage
+    TARIFF_INFO = tariff_info
+    NO_PERMISSION = have_no_permission
 
 
 class BotButtons:

@@ -40,7 +40,9 @@ async def get_user_id(username, session_data: SessionData):
         except telethon.errors.UsernameInvalidError as ex:
             logging.warning(ex)
             raise
-
+        except ValueError as ex:
+            logging.error(ex)
+            raise
         user_id = user.full_user.id
         return user_id
 

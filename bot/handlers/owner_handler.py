@@ -124,7 +124,7 @@ async def sub_username_chosen(message: Message, state: FSMContext):
     try:
         user_id = await get_user_id(username, user_data['session_data'])
         days, status = main.db.get_sub_stats(user_id)
-    except telethon.errors.UsernameInvalidError as ex:
+    except (telethon.errors.UsernameInvalidError, ValueError) as ex:
         await message.reply(f"Пользователя {username} не существует в telegram")
         return
     except ExistsError:

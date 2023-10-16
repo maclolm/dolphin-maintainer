@@ -6,7 +6,7 @@ import yaml
 from aiogram import Bot, Dispatcher
 
 from aiogram.fsm.storage.memory import MemoryStorage
-from bot.middlewares import StartMessageMiddleware, OwnerMessageMiddleware
+from bot.middlewares import StartMessageMiddleware, OwnerMessageMiddleware, SubscriberMessageMiddleware
 from bot.handlers import owner_handler, start_handler, sub_handler
 from dbcontroller.dbcontroller import DataBaseController
 from scheduler.scheduler import Scheduler
@@ -28,13 +28,14 @@ def parse_config(file):
         api_hash=data["api_hash"],
         api_id=data["api_id"]
     )
+    payments_provider_token = data['payments_provider_token']
 
-    return config, tg_token
+    return config, tg_token, payments_provider_token
 
 
 async def main():
     try:
-        session_data, token = parse_config(DEFAULT_CONFIG)
+        session_data, token, payments_provider_token = parse_config(DEFAULT_CONFIG)
 
         db.init()
 
@@ -45,6 +46,9 @@ async def main():
 
         owner_middleware = OwnerMessageMiddleware(session_data)
         owner_handler.router.message.middleware(owner_middleware)
+
+        sub_middleware = SubscriberMessageMiddleware(payments_provider_token)
+        sub_handler.router.message.middleware(sub_middleware)
 
         storage = MemoryStorage()
         dispatcher = Dispatcher(storage=storage)

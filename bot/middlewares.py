@@ -56,6 +56,9 @@ class OwnerMessageMiddleware(BaseMiddleware):
 
 
 class SubscriberMessageMiddleware(BaseMiddleware):
+    def __init__(self, payments_provider_token):
+        self.payments_provider_token = payments_provider_token
+
     async def __call__(
         self,
         handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
@@ -65,6 +68,7 @@ class SubscriberMessageMiddleware(BaseMiddleware):
 
         sub_id = event.from_user.id
         if _is_subscriber(sub_id):
+            await data['state'].update_data(payments_provider_token=self.payments_provider_token)
             return await handler(event, data)
 
         await event.answer(BotMessages.NO_PERMISSION)
