@@ -9,7 +9,11 @@ from datatypes import SubStatus
 DEFAULT_DB_FILE = 'dolphin-subscribers.db'
 
 
-class ExistsError(BaseException):
+class AlreadyExists(BaseException):
+    pass
+
+
+class NotExists(BaseException):
     pass
 
 
@@ -34,21 +38,23 @@ class DataBaseController:
             return res
 
         except Exception as ex:
-            logging.exception(f'Exception while executing cmd {cmd}: {ex}')
+            logging.error(f'Exception while executing cmd {cmd}: {ex}')
+            raise
 
     def __execute_and_commit_cmd(self, cmd):
         try:
             self.__execute_cmd(cmd)
             self.conn.commit()
         except Exception as ex:
-            logging.exception(f'Exception while commit cmd {cmd}: {ex}')
+            logging.error(f'Exception while commit cmd {cmd}: {ex}')
             self.conn.rollback()
+            raise
 
     def init(self):
         try:
             cmd = "CREATE TABLE IF NOT EXISTS subscribers (" \
                   "     id INTEGER PRIMARY KEY," \
-                  "     tg_id INT NOT NULL," \
+                  "     tg_id INT NOT NULL UNIQUE," \
                   "     username CHAR NOT NULL," \
                   "     creation_datetime DATETIME," \
                   "     status INT NOT NULL," \
@@ -58,7 +64,7 @@ class DataBaseController:
 
             cmd = "CREATE TABLE IF NOT EXISTS owners (" \
                   "     id INTEGER PRIMARY KEY," \
-                  "     tg_id INT NOT NULL," \
+                  "     tg_id INT NOT NULL UNIQUE," \
                   "     username CHAR NOT NULL" \
                   ");"
             self.__execute_cmd(cmd)
@@ -81,14 +87,17 @@ class DataBaseController:
             self.conn.rollback()
 
     def add_to_sub_table(self, user_id, username, sub_days):
-        sql = SQlActions.ADD_TO_SUBS.format(
-            user_id=user_id,
-            username=username,
-            datetime=datetime.now(),
-            status=SubStatus.ACTUAL,
-            sub_days=int(sub_days)
-        )
-        self.__execute_and_commit_cmd(sql)
+        try:
+            sql = SQlActions.ADD_TO_SUBS.format(
+                user_id=user_id,
+                username=username,
+                datetime=datetime.now(),
+                status=SubStatus.ACTUAL,
+                sub_days=int(sub_days)
+            )
+            self.__execute_and_commit_cmd(sql)
+        except sqlite3.IntegrityError:
+            raise AlreadyExists
 
     def add_to_owner_table(self, user_id, username):
         sql = SQlActions.ADD_TO_OWNERS.format(user_id=user_id, username=username)
@@ -119,7 +128,7 @@ class DataBaseController:
         sql = SQlActions.GET_SUB_STATS.format(tg_id=tg_id)
         res = self.__execute_cmd(sql)
         if len(res) == 0:
-            raise ExistsError()
+            raise NotExists()
         (days, status) = res[0]
         return days, status
 

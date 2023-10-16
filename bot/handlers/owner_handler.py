@@ -1,9 +1,12 @@
+import sqlite3
+
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from dbcontroller.dbcontroller import ExistsError
+import dbcontroller.dbcontroller
+from dbcontroller.dbcontroller import NotExists, AlreadyExists
 from bot.messages import BotButtons
 from bot.handlers.routers_helper import get_user_id
 from datatypes import SubStatus
@@ -54,9 +57,14 @@ async def sub_start_subscription_days_chosen(message: Message, state: FSMContext
     user_id = user_data['tg_id']
 
     await message.answer(f"Добавление {username} ...")
-    main.db.add_to_sub_table(user_id, username, start_sub_days)
+    try:
+        main.db.add_to_sub_table(user_id, username, start_sub_days)
+    except AlreadyExists:
+        await message.answer(f"Пользователь {username} [id:{user_id}] уже существует в таблице подписчиков.")
+        await state.clear()
+        return
 
-    await message.answer(f"Пользователь {username} id: {user_id} успешно добавлен таблицу подписчиков.")
+    await message.answer(f"Пользователь {username} [id:{user_id}] успешно добавлен таблицу подписчиков.")
     await state.clear()
 # -- End add subscriber section
 
@@ -127,7 +135,7 @@ async def sub_username_chosen(message: Message, state: FSMContext):
     except (telethon.errors.UsernameInvalidError, ValueError) as ex:
         await message.reply(f"Пользователя {username} не существует в telegram")
         return
-    except ExistsError:
+    except NotExists:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
         return
     finally:
@@ -156,7 +164,7 @@ async def sub_username_chosen(message: Message, state: FSMContext):
     try:
         user_id = await get_user_id(username, user_data['session_data'])
         main.db.delete_from_sub_table(user_id)
-    except ExistsError:
+    except NotExists:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
         await state.clear()
         return
@@ -185,7 +193,7 @@ async def owner_username_chosen(message: Message, state: FSMContext):
     try:
         user_id = await get_user_id(username, user_data['session_data'])
         main.db.delete_from_owner_table(user_id)
-    except ExistsError:
+    except NotExists:
         await message.reply(f"Пользователя {username} не существует в таблице (или он сменил username)")
         await state.clear()
         return
