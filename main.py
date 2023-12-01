@@ -8,12 +8,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from bot.middlewares import StartMessageMiddleware, OwnerMessageMiddleware, SubscriberMessageMiddleware
 from bot.handlers import owner_handler, start_handler, sub_handler
-from dbcontroller.dbcontroller import DataBaseController
 from scheduler.scheduler import Scheduler
 
 DEFAULT_CONFIG = "config.yaml"
-
-db = DataBaseController()
 
 logging.basicConfig(level=logging.INFO)
 
@@ -36,8 +33,6 @@ def parse_config(file):
 async def main():
     try:
         session_data, token, payments_provider_token = parse_config(DEFAULT_CONFIG)
-
-        db.init()
 
         bot = Bot(token=token)
 
