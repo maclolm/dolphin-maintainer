@@ -5,10 +5,9 @@ from aiogram.types import Message
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-import dbcontroller.dbcontroller
-from dbcontroller.dbcontroller import NotExists, AlreadyExists
 from bot.messages import BotButtons
 from bot.handlers.routers_helper import get_user_id
+from dbcontroller import models
 from datatypes import SubStatus
 
 import telethon
@@ -54,17 +53,17 @@ async def sub_start_subscription_days_chosen(message: Message, state: FSMContext
     user_data = await state.get_data()
     username = user_data['username']
     start_sub_days = user_data['start_sub_days']
-    user_id = user_data['tg_id']
+    tg_id = user_data['tg_id']
 
     await message.answer(f"Добавление {username} ...")
     try:
-        main.db.add_to_sub_table(user_id, username, start_sub_days)
-    except AlreadyExists:
-        await message.answer(f"Пользователь {username} [id:{user_id}] уже существует в таблице подписчиков.")
+        models.Subscriber.create(tg_id=tg_id, username=username, sub_days_count=start_sub_days)
+    except Exception:
+        await message.answer(f"Пользователь {username} [id:{tg_id}] уже существует в таблице подписчиков.")
         await state.clear()
         return
 
-    await message.answer(f"Пользователь {username} [id:{user_id}] успешно добавлен таблицу подписчиков.")
+    await message.answer(f"Пользователь {username} [id:{tg_id}] успешно добавлен таблицу подписчиков.")
     await state.clear()
 # -- End add subscriber section
 
@@ -96,7 +95,7 @@ async def owner_username_chosen(message: Message, state: FSMContext):
         await state.clear()
 
     await message.answer(f"Добавление {username}...")
-    main.db.add_to_owner_table(user_id, username)
+    models.Owner.create(tg_id=user_id, username=username)
 
     await message.answer(f"Пользователь {username} id: {user_id} успешно добавлен таблицу владельцев.")
     await state.clear()
@@ -105,7 +104,7 @@ async def owner_username_chosen(message: Message, state: FSMContext):
 
 @router.message(F.text == BotButtons.STATS_FOR_OWNER)
 async def get_global_stats(message: Message):
-    subs = main.db.get_all_subs()
+    subs = models.Subscriber.select()
     subs_string = 'ID|  [NICKNAME]  -  [STATUS | DAYS]\n'
     for sub_id, _, username, creation_datetime, status, sub_days in subs:
         sub_str = '{:<d} | [{:<s}]  -  [{:<d} | {:<d}]\n'.format(sub_id, username, status, int(sub_days))

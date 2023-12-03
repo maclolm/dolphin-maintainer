@@ -2,22 +2,23 @@ from aiogram import BaseMiddleware
 from aiogram.types import Message
 from typing import Callable, Dict, Any, Awaitable
 
+from dbcontroller import models
 from bot.messages import BotMessages
 from config import SessionData
 
 
 def _is_owner(owner_id):
-    with dbcontroller.DataBaseController() as db:
-        if (owner_id,) in db.get_owner_ids():
-            return True
-        return False
+    owners_ids = models.Owner.select('id')
+    if owner_id in owners_ids:
+        return True
+    return False
 
 
 def _is_subscriber(sub_id):
-    with dbcontroller.DataBaseController() as db:
-        if (sub_id,) in db.get_sub_ids():
-            return True
-        return False
+    subs_ids = models.Subscriber.select('id')
+    if sub_id in subs_ids:
+        return True
+    return False
 
 
 class StartMessageMiddleware(BaseMiddleware):

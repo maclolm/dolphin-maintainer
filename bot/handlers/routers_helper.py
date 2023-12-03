@@ -4,8 +4,10 @@ import telethon.errors
 from telethon import TelegramClient
 from telethon.tl.functions.users import GetFullUserRequest
 from config import SessionData
-from dbcontroller.dbcontroller import DataBaseController
 from logging import getLogger
+
+from dbcontroller import models
+
 log = getLogger('owner_handler')
 
 
@@ -47,13 +49,13 @@ async def get_user_id(username, session_data: SessionData):
         return user_id
 
 
-async def refresh_all_users(db_conn: DataBaseController, session_data: SessionData):
-    subs = db_conn.get_all_subs_usernames()
+async def refresh_all_users(session_data: SessionData):
+    subs = [(sub.tg_id, sub.username) for sub in models.Subscriber.select()]
     subs_with_expired_username = get_expired_usernames(subs, session_data)
     async for tg_id, username in subs_with_expired_username:
-        db_conn.update_sub_tg_username(tg_id, username)
+        models.Subscriber.update(username=username).where(models.Subscriber.tg_id == tg_id)
 
-    owners = db_conn.get_all_owners_usernames()
+    owners = [(owner.tg_id, owner.username) for owner in models.Owner.select()]
     owners_with_expired_username = get_expired_usernames(owners, session_data)
     async for tg_id, username in owners_with_expired_username:
-        db_conn.update_sub_tg_username(tg_id, username)
+        models.Owner.update(username=username).where(models.Owner.tg_id == tg_id)

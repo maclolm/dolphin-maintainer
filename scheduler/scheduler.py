@@ -28,37 +28,31 @@ class Scheduler(AsyncIOScheduler):
 
     async def __schedule_update_subs_info(self):
         log.info('Updating of ids of all users is started by the scheduler')
-        with DataBaseController() as db_conn:
-            await refresh_all_users(db_conn, self.session_data)
+        await refresh_all_users(self.session_data)
 
     def __schedule_recalc_tasks(self):
         self.__decrease_sub_days()
         self.__recalc_sub_status()
 
     async def __send_subscription_remind_message(self):
-        with DataBaseController() as db_conn:
-            expired_subs = db_conn.get_expired_subs()
+        expired_subs = db_conn.get_expired_subs()
 
-            # TODO: Inline-кнопка для оплаты
-            for tg_id, days_to_expire in expired_subs:
-                if days_to_expire == 0:
-                    await self.tg_bot.send_message(text=f"Твоя подписка закончилась.", chat_id=tg_id)
-                    continue
-                await self.tg_bot.send_message(
-                    text=f"Твоя подписка заканчивается через {days_to_expire} дней. Не забудь продлить.",
-                    chat_id=tg_id
-                )
+        # TODO: Inline-кнопка для оплаты
+        for tg_id, days_to_expire in expired_subs:
+            if days_to_expire == 0:
+                await self.tg_bot.send_message(text=f"Твоя подписка закончилась.", chat_id=tg_id)
+                continue
+            await self.tg_bot.send_message(
+                text=f"Твоя подписка заканчивается через {days_to_expire} дней. Не забудь продлить.",
+                chat_id=tg_id
+            )
 
     @staticmethod
     def __decrease_sub_days():
         log.info('Sub days decreasing is started by scheduler')
-
-        with DataBaseController() as db_conn:
-            db_conn.decrease_subscription_days()
+        db_conn.decrease_subscription_days()
 
     @staticmethod
     def __recalc_sub_status():
         log.info('Sub status recalculation is started by scheduler')
-
-        with DataBaseController() as db_conn:
-            db_conn.recalc_sub_status()
+        db_conn.recalc_sub_status()

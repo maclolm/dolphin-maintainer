@@ -7,6 +7,7 @@ from bot.handlers.routers_helper import refresh_all_users
 from aiogram.fsm.context import FSMContext
 
 import main
+from dbcontroller import models
 from bot.messages import BotButtons, BotMessages
 
 router = Router()
@@ -22,17 +23,17 @@ async def cmd_start(message: Message, state: FSMContext):
     ]
     kb = unsub_buttons
 
-    subs = main.db.get_sub_ids()
-    if (message.from_user.id,) in subs:
+    subs = models.Subscriber.select(models.Subscriber.tg_id)
+    if message.from_user.id in [sub.tg_id for sub in subs]:
         sub_buttons = [
             [KeyboardButton(text=BotButtons.DAYS_TO_EXPIRE), KeyboardButton(text=BotButtons.RENEW_SUBSCRIPTION)]
         ]
         kb.extend(sub_buttons)
 
-    owners = main.db.get_owner_ids()
-    if (message.from_user.id,) in owners:
+    owners = models.Owner.select(models.Owner.tg_id)
+    if message.from_user.id in [owner.tg_id for owner in owners]:
         user_data = await state.get_data()
-        await refresh_all_users(main.db, user_data['session_data'])
+        await refresh_all_users(user_data['session_data'])
         owner_buttons = [
             [KeyboardButton(text=BotButtons.STATS_FOR_OWNER), KeyboardButton(text=BotButtons.GET_SUB_INFO)],
             [KeyboardButton(text=BotButtons.ADD_SUB), KeyboardButton(text=BotButtons.DEL_SUB)],

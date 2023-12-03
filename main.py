@@ -9,6 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from bot.middlewares import StartMessageMiddleware, OwnerMessageMiddleware, SubscriberMessageMiddleware
 from bot.handlers import owner_handler, start_handler, sub_handler
 from scheduler.scheduler import Scheduler
+from dbcontroller.models_factory import ModelsFactory
 
 DEFAULT_CONFIG = "config.yaml"
 
@@ -35,6 +36,8 @@ async def main():
         session_data, token, payments_provider_token = parse_config(DEFAULT_CONFIG)
 
         bot = Bot(token=token)
+        models_factory = ModelsFactory()
+        models_factory.init()
 
         start_middleware = StartMessageMiddleware(session_data)
         start_handler.router.message.middleware(start_middleware)
